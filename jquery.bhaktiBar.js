@@ -102,8 +102,9 @@
     var html = '<div id="resultList">';
     results.forEach(function(item) {
       html += '<a href';
-      html += '=';
+      html += '="';
       html += item.link;
+      html += '"';
       html += '>';
       html += item.title;
       html += '</a>';
