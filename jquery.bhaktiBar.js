@@ -94,7 +94,8 @@
     var categories = ['all', 'bhagavatpatrika', 'movies', 'songs', 'harmonistmonthly', 'harmonistmagazine',
     'books', 'lectures', 'harikatha'];
     categories.forEach(function(item) {
-      html += '<a href="javascript:void(0)">';
+      html += '<a href="javascript:void(0)"';
+      html += ' target="_blank">';
       html += item[0].toUpperCase() + item.substr(1);
       html += '</a>';
     });
@@ -169,6 +170,7 @@
         html += '="';
         html += obj.link;
         html += '"';
+        html += ' target="_blank"';
         html += '>';
         html += obj.title;
         obj.hasOwnProperty('language') ? html += ' | ' + obj.language: null;
