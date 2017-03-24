@@ -3,10 +3,11 @@
  */
 
 (function($) {
-    var baseUrl = 'http://www.krsna.us/api/v1/search';
-    var category = 'bhagavatpatrika';
+  var baseUrl = 'http://www.krsna.us/api/v1/search';
+  var category = 'all';
+  var baseAllUrl = 'http://www.krsna.us/api/v1/';
   $.fn.bhaktiBar = function() {
-    setSize(this);
+    setSize();
     this.html(createHtml());
     handleClick();
     submitSearch();
@@ -16,13 +17,14 @@
   function createHtml() {
     var html = '<div id="bhakti-wrapper">';
     html += '<div id="bhakti-nav">';
-    html += '<button id="bhakti-dropbtn">Bhagavatpatrika ▾</button>';
+    html += '<button id="bhakti-dropbtn">All ▾</button>';
     html += '<div id="bhakti-categories">';
     html = addCategories(html);
     html += '</div>';
     html += '<input id="bhakti-input" placeholder="Search Here" />';
     html += '<button id="bhakti-submit-btn">Go</button>';
     html += '</div>';
+    html += '<div id="results-nav"></div>';
     html += '<div id="bhakti-search-results"></div>';
     html += '</div>';
     return html
@@ -32,7 +34,7 @@
       $('#bhakti-dropbtn').text(this.text + ' ▾');
       category = this.text[0].toLowerCase() + this.text.substr(1);
       $('#bhakti-categories').css({'display': 'none'})
-    })
+    });
   }
   function styling() {
 
@@ -46,11 +48,25 @@
       'background-color': '#f9f9f9',
       'box-shadow': '0px 8px 15px 0px rgba(0,0,0,0.2)'
     });
+    var $rc = $('#results-categories');
+    $rc.css({
+      'display': 'none',
+      'position': 'absolute',
+      'z-index': '1',
+      'width': '45%',
+      'background-color': '#f9f9f9',
+      'box-shadow': '0px 8px 15px 0px rgba(0,0,0,0.2)'
+    });
+    $('#results-categories a').css({'display': 'block'});
+    $('#results-btn, #results-categories').hover(function() {$rc.css({'display': 'block'})}, function() {$rc.css({'display': 'none'})});
     $('#bhakti-dropbtn').css({'min-width': '160px'});
     $('#bhakti-dropbtn, #bhakti-categories').hover(function() {$bc.css({'display': 'block'})}, function() {$bc.css({'display': 'none'})});
     $('#bhakti-categories a').css({'display': 'block', 'padding': '12px 16px', 'text-decoration': 'none'});
-    $('#bhakti-search-results').css({'overflow-y': 'auto', 'max-height': '300px'});
+    $('#bhakti-search-results').css({'overflow-y': 'auto', 'max-height': '300px', 'overflow-x': 'hidden', 'word-wrap': 'break-word'});
     $('#resultList a').css({'text-decoration': 'none', 'display': 'block'});
+    // $('#result-menu').css({'position': 'fixed', 'background-color': 'white', 'margin-top': '-20px', 'padding': '5px'});
+    // $('#resultList h2').css({'padding-top': '20px'});
+    $('#resultList .bhakti-anchors').css({'padding-top': '300px', 'margin-top': '-350px'});
     responsiveDesign();
   }
   function responsiveDesign() {
@@ -75,7 +91,7 @@
     }
   }
   function addCategories(html) {
-    var categories = ['bhagavatpatrika', 'movies', 'songs', 'harmonistmonthly', 'harmonistmagazine',
+    var categories = ['all', 'bhagavatpatrika', 'movies', 'songs', 'harmonistmonthly', 'harmonistmagazine',
     'books', 'lectures', 'harikatha'];
     categories.forEach(function(item) {
       html += '<a href="javascript:void(0)">';
@@ -84,19 +100,84 @@
     });
     return html;
   }
+  // function displayMenu(results) {
+  //   var html = '<button id="results-btn">BhagavatPatrika</button>';
+  //   html += '<div id="results-categories">';
+  //   Object.keys(results).forEach(function(name, index) {
+  //     html += '<a href="#bhakti-';
+  //     html += name;
+  //     html += '">';
+  //     html += name;
+  //     html += '</a>';
+  //   });
+  //   html += '</div>';
+  //   $('#results-nav').html(html);
+  // }
   function submitSearch() {
     var searchButton = $('#bhakti-submit-btn');
     searchButton.click(function() {
       var searchQuery = $('#bhakti-input').val();
       var searchUrl = baseUrl + '/' + category + '/' + searchQuery;
-      $.get(searchUrl).then(function(result) {
+      var displayAllUrl = baseAllUrl + category;
+      if (!searchQuery) {
+        if (category === 'all') {
+          console.log('Enter something to search')
+        } else {
+          search(displayAllUrl);
+        }
+      } else {
+        if (category === 'all') {
+          searchAll(searchUrl);
+        } else {
+          search(searchUrl);
+        }
+      }
+    })
+  }
+  function search(searchUrl) {
+    $.get(searchUrl).then(function(result) {
         return result
       }).then(function(result) {
         var results = result[Object.keys(result)[0]];
         displayResults(results);
         styling();
       })
-    })
+  }
+  function searchAll(url) {
+    $.get(url).then(function(result) {
+        return result
+      }).then(function(result) {
+        var results = result[Object.keys(result)[0]];
+        displayAllResults(results);
+        styling();
+      })
+  }
+  function displayAllResults(results) {
+    var html = '<div id="resultList">';
+    // html += '<ul id="result-menu">';
+    // Object.keys(results).forEach(function(name, index) {
+    //
+    //   html += `<li><a href="#bhakti-${name}">`;
+    //   html += name;
+    //   html += '</a></li>';
+    // });
+    // html += '</ul>';
+    Object.keys(results).forEach(function(name, index) {
+      name ? html += `<h2 id="bhakti-${name}" class=".bhakti-anchors">${name}</h2>`:null;
+      results[name].forEach(function(obj, i) {
+        html += '<a href';
+        html += '="';
+        html += obj.link;
+        html += '"';
+        html += '>';
+        html += obj.title;
+        obj.hasOwnProperty('language') ? html += ' | ' + obj.language: null;
+        obj.hasOwnProperty('category') ? html += ' | ' + obj.category: null;
+        html += '</a>';
+      });
+    });
+    html += '</div>';
+    $('#bhakti-search-results').html(html);
   }
   function displayResults(results) {
     var html = '<div id="resultList">';
@@ -107,13 +188,15 @@
       html += '"';
       html += '>';
       html += item.title;
+      item.hasOwnProperty('language') ? html += ' | ' + item.language: null;
+      item.hasOwnProperty('category') ? html += ' | ' + item.category: null;
       html += '</a>';
     });
     html += '</div>';
     $('#bhakti-search-results').html(html);
 
   }
-  function setSize(elem) {
+  function setSize() {
     responsiveDesign();
     $(window).resize(function() {
       responsiveDesign();
