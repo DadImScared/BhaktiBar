@@ -77,6 +77,7 @@
     // $('#result-menu').css({'position': 'fixed', 'background-color': 'white', 'margin-top': '-20px', 'padding': '5px'});
     // $('#resultList h2').css({'padding-top': '20px'});
     $('#resultList .bhakti-anchors').css({'padding-top': '300px', 'margin-top': '-350px'});
+    $('.color-book-results').css({'background-color': 'red', 'color': 'white'});
     responsiveDesign();
   }
   function responsiveDesign() {
@@ -102,7 +103,7 @@
   }
   function addCategories(html) {
     var categories = ['all', 'bhagavatpatrika', 'movies', 'songs', 'harmonistmonthly', 'harmonistmagazine',
-    'books', 'lectures', 'harikatha'];
+    'books', 'book content', 'lectures', 'harikatha'];
     categories.forEach(function(item) {
       html += '<a href="javascript:void(0)">';
       html += item[0].toUpperCase() + item.substr(1);
@@ -127,8 +128,13 @@
     var searchButton = $('#bhakti-submit-btn');
     searchButton.click(function() {
       var searchQuery = $('#bhakti-input').val();
+      console.log(category.split(" ").join(""));
       var searchUrl = baseUrl + '/' + category + '/' + searchQuery;
       var displayAllUrl = baseAllUrl + category;
+      if (category.split(" ").join("") == 'bookcontent') {
+        bookContentSearch(baseAllUrl + 'booksearch' + '/' + searchQuery, searchQuery);
+        return;
+      }
       if (!searchQuery) {
         if (category === 'all') {
           console.log('Enter something to search')
@@ -143,6 +149,16 @@
         }
       }
     })
+  }
+  function bookContentSearch(url, query) {
+    $.get(url).then(function(result) {
+        return result
+      }).then(function(result) {
+        var results = result[Object.keys(result)[0]];
+        console.log(results);
+        displayBookContent(results, query);
+        styling();
+      })
   }
   function search(searchUrl) {
     $.get(searchUrl).then(function(result) {
@@ -161,6 +177,29 @@
         displayAllResults(results);
         styling();
       })
+  }
+  function displayBookContent(results, query) {
+    console.log(query);
+    var regex = new RegExp(query, 'gi');
+    var html = '<div id="resultList">';
+    results.forEach(function(item) {
+      html += '<h4>Title:</h4>';
+      html += '<a href="';
+      html += item.link;
+      html += '">';
+      html += item.title;
+      html += '</a>';
+      html += '<h4>Page: </h4>';
+      html += item.page;
+      html += '<h4>Content</h4>';
+      html += '<p>content is scanned so some words might not show up properly</p>';
+      html += '<div class="book-content">';
+      html += item.content.replace(regex, '<span class="color-book-results">' + query + '</span>');
+      html += '</div>';
+
+    });
+    html += '</div>';
+    $('#bhakti-search-results').html(html);
   }
   function displayAllResults(results) {
     var html = '<div id="resultList">';
