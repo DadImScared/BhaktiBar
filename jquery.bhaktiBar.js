@@ -12,6 +12,7 @@
     handleClick();
     submitSearch();
     styling();
+    watchInput();
     return this;
   };
   function createHtml() {
@@ -33,7 +34,16 @@
     $('#bhakti-categories a').click(function() {
       $('#bhakti-dropbtn').text(this.text + ' ▾');
       category = this.text[0].toLowerCase() + this.text.substr(1);
-      $('#bhakti-categories').css({'display': 'none'})
+      $('#bhakti-categories').css({'display': 'none'});
+      var searchButton = $('#bhakti-submit-btn');
+      searchButton.click();
+    });
+  }
+  function watchInput() {
+    $('#bhakti-input').keyup(function(e) {
+      if (e.keyCode == 13) {
+        $('#bhakti-submit-btn').click();
+      }
     });
   }
   function styling() {
@@ -169,7 +179,6 @@
         html += '="';
         html += obj.link;
         html += '"';
-        html += ' target="_blank"';
         html += '>';
         html += obj.title;
         obj.hasOwnProperty('language') ? html += ' | ' + obj.language: null;
@@ -187,7 +196,6 @@
       html += '="';
       html += item.link;
       html += '"';
-      html += ' target="_blank"';
       html += '>';
       html += item.title;
       item.hasOwnProperty('language') ? html += ' | ' + item.language: null;
