@@ -103,7 +103,7 @@
   }
   function addCategories(html) {
     var categories = ['all', 'bhagavatpatrika', 'movies', 'songs', 'harmonistmonthly', 'harmonistmagazine',
-    'books', 'book content', 'lectures', 'harikatha'];
+    'hmagazine content','books', 'book content', 'lectures', 'harikatha', 'hk content'];
     categories.forEach(function(item) {
       html += '<a href="javascript:void(0)">';
       html += item[0].toUpperCase() + item.substr(1);
@@ -128,11 +128,18 @@
     var searchButton = $('#bhakti-submit-btn');
     searchButton.click(function() {
       var searchQuery = $('#bhakti-input').val();
-      console.log(category.split(" ").join(""));
       var searchUrl = baseUrl + '/' + category + '/' + searchQuery;
       var displayAllUrl = baseAllUrl + category;
       if (category.split(" ").join("") == 'bookcontent') {
         bookContentSearch(baseAllUrl + 'booksearch' + '/' + searchQuery, searchQuery);
+        return;
+      }
+      if (category.split(" ").join("") === 'hkcontent') {
+        searchSnippets(baseAllUrl + 'hksearch' + '/' + searchQuery + '?snippets=True', searchQuery);
+        return;
+      }
+      if (category.split(" ").join("") === 'hmagazinecontent') {
+        searchSnippets(baseAllUrl + 'hmsearch' + '/' + searchQuery + '?snippets=True', searchQuery);
         return;
       }
       if (!searchQuery) {
@@ -177,6 +184,37 @@
         displayAllResults(results);
         styling();
       })
+  }
+  function searchSnippets(url, query) {
+    $.get(url).then(function(result) {
+        return result
+      }).then(function(result) {
+        var results = result[Object.keys(result)[0]];
+        displaySnippets(results, query);
+        styling();
+      })
+  }
+  function displaySnippets(results, query) {
+    var regex = new RegExp(query, 'gi');
+    var html = '<div id="resultList">';
+    results.forEach(function(item) {
+      html += '<h4>Title:</h4>';
+      html += '<a href="';
+      html += item.link;
+      html += '">';
+      html += item.title;
+      html += '</a>';
+      html += '<h4>Content</h4>';
+      html += '<div class="snippets">';
+      item.content.forEach(function(snippet) {
+        html += '<div class="snippet">';
+        html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        html += '</div>';
+        html += '<br>';
+      });
+    });
+    html += '</div>';
+    $('#bhakti-search-results').html(html);
   }
   function displayBookContent(results, query) {
     console.log(query);
