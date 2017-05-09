@@ -3,9 +3,9 @@
  */
 
 (function($) {
-  var baseUrl = 'http://127.0.0.1:5000/api/v1/search';
+  var baseUrl = 'http://www.krsna.us/api/v1/search';
   var category = 'all';
-  var baseAllUrl = 'http://127.0.0.1:5000/api/v1/';
+  var baseAllUrl = 'http://www.krsna.us/api/v1/';
   $.fn.bhaktiBar = function() {
     setSize();
     this.html(createHtml());
