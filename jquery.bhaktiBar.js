@@ -3,9 +3,9 @@
  */
 
 (function($) {
-  var baseUrl = 'http://www.krsna.us/api/v1/search';
+  var baseUrl = 'http://127.0.0.1:5000/api/v1/search';
   var category = 'all';
-  var baseAllUrl = 'http://www.krsna.us/api/v1/';
+  var baseAllUrl = 'http://127.0.0.1:5000/api/v1/';
   $.fn.bhaktiBar = function() {
     setSize();
     this.html(createHtml());
@@ -131,7 +131,7 @@
       var searchUrl = baseUrl + '/' + category + '/' + searchQuery;
       var displayAllUrl = baseAllUrl + category;
       if (category.split(" ").join("") == 'bookcontent') {
-        bookContentSearch(baseAllUrl + 'booksearch' + '/' + searchQuery, searchQuery);
+        searchBookSnippets(baseAllUrl + 'booksearch' + '/' + searchQuery, searchQuery);
         return;
       }
       if (category.split(" ").join("") === 'hkcontent') {
@@ -194,6 +194,15 @@
         styling();
       })
   }
+  function searchBookSnippets(url, query) {
+    $.get(url).then(function(result) {
+        return result
+      }).then(function(result) {
+        var results = result[Object.keys(result)[0]];
+        displayBookSnippets(results, query);
+        styling();
+      })
+  }
   function displaySnippets(results, query) {
     var regex = new RegExp(query, 'gi');
     var html = '<div id="resultList">';
@@ -204,6 +213,26 @@
       html += '">';
       html += item.title;
       html += '</a>';
+      html += '<h4>Content</h4>';
+      html += '<div class="snippets">';
+      item.content.forEach(function(snippet) {
+        html += '<div class="snippet">';
+        html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        html += '</div>';
+        html += '<br>';
+      });
+    });
+    html += '</div>';
+    $('#bhakti-search-results').html(html);
+  }
+  function displayBookSnippets(results, query) {
+    var regex = new RegExp(query, 'gi');
+    var html = '<div id="resultList">';
+    results.forEach(function(item) {
+      html += '<h4>Title:</h4>';
+      html += '<p>';
+      html += item.title;
+      html += '</p>';
       html += '<h4>Content</h4>';
       html += '<div class="snippets">';
       item.content.forEach(function(snippet) {
