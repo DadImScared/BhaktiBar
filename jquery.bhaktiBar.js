@@ -235,7 +235,7 @@
       html += '</p>';
       html += '<h4>Content</h4>';
       html += '<div class="snippets">';
-      item.displayContent.forEach(function(snippet) {
+      item.content.forEach(function(snippet) {
         html += '<div class="snippet">';
         html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
         html += '</div>';
