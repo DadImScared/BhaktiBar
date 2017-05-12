@@ -15,6 +15,33 @@
     watchInput();
     return this;
   };
+
+  function highlightBookContent(search, indexes, highLightClass) {
+  const searchList = search.split(" ");
+  let newList = [];
+  for (let i = 0; i < searchList.length; i++) {
+    if (indexes.indexOf(i) !== -1) {
+      newList.push(`<span class="${highLightClass || "color-book-results"}">${searchList[i]}</span>`);
+    } else {
+      newList.push(searchList[i]);
+    }
+  }
+  return newList.join(" ");
+  }
+
+  function highlightSnippets(snippet, query, highLightClass) {
+    const re = new RegExp(query.split(" ").join("|"), "gi");
+    console.log(re);
+    const searchQuery = query.split(" ");
+    snippet = snippet.replace(re, function(matched) {
+      console.log(matched);
+      return `<span class="${highLightClass || "color-book-results"}">${matched}</span>`;
+    });
+console.log(snippet);
+    return snippet;
+
+  }
+
   function createHtml() {
     var html = '<div id="bhakti-wrapper">';
     html += '<div id="bhakti-nav">';
@@ -217,7 +244,8 @@
       html += '<div class="snippets">';
       item.content.forEach(function(snippet) {
         html += '<div class="snippet">';
-        html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        // html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        html += highlightSnippets(snippet, query);
         html += '</div>';
         html += '<br>';
       });
@@ -235,9 +263,10 @@
       html += '</p>';
       html += '<h4>Content</h4>';
       html += '<div class="snippets">';
-      item.content.forEach(function(snippet) {
+      item.content.forEach(function(snippet, index) {
         html += '<div class="snippet">';
-        html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        // html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
+        html += highlightBookContent(snippet, item.displayContent[index]);
         html += '</div>';
         html += '<br>';
       });
