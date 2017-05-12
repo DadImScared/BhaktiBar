@@ -34,10 +34,8 @@
     console.log(re);
     const searchQuery = query.split(" ");
     snippet = snippet.replace(re, function(matched) {
-      console.log(matched);
       return `<span class="${highLightClass || "color-book-results"}">${matched}</span>`;
     });
-console.log(snippet);
     return snippet;
 
   }
@@ -244,7 +242,6 @@ console.log(snippet);
       html += '<div class="snippets">';
       item.content.forEach(function(snippet) {
         html += '<div class="snippet">';
-        // html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
         html += highlightSnippets(snippet, query);
         html += '</div>';
         html += '<br>';
@@ -265,7 +262,6 @@ console.log(snippet);
       html += '<div class="snippets">';
       item.content.forEach(function(snippet, index) {
         html += '<div class="snippet">';
-        // html += snippet.replace(regex, '<span class="color-book-results">' + query + '</span>');
         html += highlightBookContent(snippet, item.displayContent[index]);
         html += '</div>';
         html += '<br>';
