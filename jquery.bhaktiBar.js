@@ -31,7 +31,6 @@
 
   function highlightSnippets(snippet, query, highLightClass) {
     const re = new RegExp(query.split(" ").join("|"), "gi");
-    console.log(re);
     const searchQuery = query.split(" ");
     snippet = snippet.replace(re, function(matched) {
       return `<span class="${highLightClass || "color-book-results"}">${matched}</span>`;
@@ -258,14 +257,17 @@
       html += '<p>';
       html += item.title;
       html += '</p>';
+      html += '<h4>Page: </h4>';
+      html += item.page;
       html += '<h4>Content</h4>';
       html += '<div class="snippets">';
-      item.content.forEach(function(snippet, index) {
-        html += '<div class="snippet">';
-        html += highlightBookContent(snippet, item.displayContent[index]);
-        html += '</div>';
-        html += '<br>';
-      });
+      html += highlightBookContent(item.content, item.indexes);
+      // item.content.forEach(function(snippet, index) {
+      //   html += '<div class="snippet">';
+      //   html += highlightBookContent(snippet, item.displayContent[index]);
+      //   html += '</div>';
+      //   html += '<br>';
+      // });
     });
     html += '</div>';
     $('#bhakti-search-results').html(html);
